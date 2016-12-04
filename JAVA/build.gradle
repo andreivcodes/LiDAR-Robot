@@ -1,12 +1,10 @@
 group '3D_MAPPER'
-version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'application'
 mainClassName = 'MainForm'
 
-version = '1.0'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
