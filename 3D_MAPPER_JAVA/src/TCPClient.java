@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by andrei on 1/4/17.
@@ -16,8 +18,6 @@ public class TCPClient extends Thread {
     Socket client;
     String line = "";
     DataOutputStream dOut;
-
-    public int bps;
 
     public TCPClient(String address, int port) {
         this.port = port;
@@ -32,12 +32,6 @@ public class TCPClient extends Thread {
             dOut = new DataOutputStream(client.getOutputStream());
             this.start();
 
-
-            Timer tbps = new Timer(1000, e -> {
-                MainFrame.getInstance().bpsText = String.valueOf(bps);
-                bps = 0;
-            });
-            tbps.start();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -53,9 +47,8 @@ public class TCPClient extends Thread {
             try {
                 BufferedReader inFromServer = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 while ((line = inFromServer.readLine()) != null) {
-                    //MainFrame.getInstance().textArea1Text = MainFrame.getInstance().textArea1Text + "Received: " + line + "\n";
+                    MainFrame.getInstance().receivedValue = line;
                     MainFrame.getInstance().textArea1Text = "Received: " + line + "\n";
-                    bps++;
                 }
             } catch (IOException e) {
                 e.printStackTrace();

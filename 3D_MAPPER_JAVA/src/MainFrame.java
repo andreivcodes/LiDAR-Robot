@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.io.IOException;
+import java.util.TimerTask;
+import java.util.Timer;
 
 /**
  * Created by andrei on 1/4/17.
@@ -15,10 +17,12 @@ public class MainFrame extends JFrame {
     private JButton LEDOffButton;
     private JButton resetTickButton;
     private JLabel bpsLabel;
+    private JProgressBar progressBar1;
     public String bpsText;
 
     private static MainFrame instance;
     TCPClient client;
+    public String receivedValue;
 
     public static MainFrame getInstance() {
         if (instance == null) {
@@ -40,18 +44,28 @@ public class MainFrame extends JFrame {
     }
 
 
+    public static int scale(final int valueIn, final int baseMin, final int baseMax, final int limitMin, final int limitMax) {
+        return ((limitMax - limitMin) * (valueIn - baseMin) / (baseMax - baseMin)) + limitMin;
+    }
+
     private void onStart() {
         client = new TCPClient("192.168.4.1", 1212);
         client.startClient();
 
-        Timer timer = new Timer(40, e -> {
-            SwingUtilities.invokeLater(() -> {
-                textArea1.setText(textArea1Text);
-                textArea1.setCaretPosition(textArea1.getDocument().getLength());
-                bpsLabel.setText(bpsText);
+        Timer timer = new Timer();
+        TimerTask myTask = new TimerTask() {
+            @Override
+            public void run() {
+                SwingUtilities.invokeLater(() -> {
+                    progressBar1.setValue(scale(Integer.valueOf(receivedValue),0,8190,0,100));
+                    textArea1.setText(textArea1Text);
+                    textArea1.setCaretPosition(textArea1.getDocument().getLength());
+                    bpsLabel.setText(bpsText);
             });
-        });
-        timer.start();
+            }
+        };
+
+        timer.schedule(myTask, 100, 100);
 
     }
 
