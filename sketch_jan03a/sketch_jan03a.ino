@@ -1,14 +1,19 @@
 #include <ESP8266WiFi.h>
 #include <Wire.h>
 #include <VL53L0X.h>
+#include <Servo.h>
+
 
 WiFiServer server(1212);
 WiFiClient cl;
 
 VL53L0X sensor;
 
+Servo servo;
+
 void setup()
 {
+  /*
   initHardware();
   WiFi.softAP("ESPap");
   server.begin();
@@ -17,10 +22,13 @@ void setup()
   sensor.init();
   sensor.setTimeout(500);
   sensor.startContinuous();
+  */
+  servo.attach(16);
 }
-
+int i;
 void loop()
 {
+  /*
   if (server.hasClient()) {
     if (!cl.connected()) {
       cl = server.available();
@@ -45,6 +53,15 @@ void loop()
   }
 
   cl.println(sensor.readRangeContinuousMillimeters());
+
+  */
+
+   servo.write(i);  
+   delay(100);        
+   i++;
+   if(i>180)
+   i=0; 
+   
 }
 
 void initHardware()
