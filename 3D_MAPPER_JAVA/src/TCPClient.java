@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,12 +11,13 @@ import java.util.TimerTask;
  * Created by andrei on 1/4/17.
  */
 public class TCPClient extends Thread {
-    private int port;
-    private String address;
-    private boolean running;
     Socket client;
     String line = "";
     DataOutputStream dOut;
+    private int port;
+    private String address;
+    private boolean running;
+    private int bps;
 
     public TCPClient(String address, int port) {
         this.port = port;
@@ -31,6 +31,15 @@ public class TCPClient extends Thread {
             client.setSoTimeout(3000);
             dOut = new DataOutputStream(client.getOutputStream());
             this.start();
+
+            Timer t = new Timer();
+            t.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    System.out.println(bps);
+                    bps = 0;
+                }
+            }, 1000, 1000);
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -47,8 +56,11 @@ public class TCPClient extends Thread {
             try {
                 BufferedReader inFromServer = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 while ((line = inFromServer.readLine()) != null) {
-                    MainFrame.getInstance().receivedValue = line;
-                    MainFrame.getInstance().textArea1Text = "Received: " + line + "\n";
+                    MainForm.getInstance().textArea1Text = "Received: " + line + "\n";
+                    MainForm.getInstance().updateUI();
+                    bps++;
+                    //MainForm.getInstance().bpsText = String.valueOf(bps);
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -68,5 +80,8 @@ public class TCPClient extends Thread {
     public void stopClient() {
         running = false;
     }
+
+
+
 
 }
