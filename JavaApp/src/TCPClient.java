@@ -18,6 +18,7 @@ public class TCPClient extends Thread {
     private String address;
     private boolean running;
     private int bps;
+    public int currentSensorValue;
 
     public TCPClient(String address, int port) {
         this.port = port;
@@ -26,9 +27,10 @@ public class TCPClient extends Thread {
 
 
     public void startClient() {
+
         try {
             client = new Socket(address, port);
-            client.setSoTimeout(3000);
+            client.setSoTimeout(1000);
             dOut = new DataOutputStream(client.getOutputStream());
             this.start();
 
@@ -41,10 +43,11 @@ public class TCPClient extends Thread {
                 }
             }, 1000, 1000);
 
+            System.out.println("startClient");
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            System.out.println(e);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
     }
 
@@ -57,6 +60,7 @@ public class TCPClient extends Thread {
                 BufferedReader inFromServer = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 while ((line = inFromServer.readLine()) != null) {
                     MainForm.getInstance().textArea1Text = "Received: " + line + "\n";
+                    currentSensorValue = Integer.valueOf(line);
                     MainForm.getInstance().updateUI();
                     bps++;
                     //MainForm.getInstance().bpsText = String.valueOf(bps);

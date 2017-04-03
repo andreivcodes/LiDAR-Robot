@@ -9,11 +9,11 @@ public class CircleScreen extends JPanel {
 
     private static final int SIZE = 256;
     private static final int POINT_SIZE = 5;
-    private int a = SIZE / 2;
-    private int b = a;
+    private int a;
+    private int b;
     private int r = 4 * SIZE / 5;
-    private int n;
-    private int[] points;
+    public int n;
+    public int[] points_radius;
     Random rng;
     private static final int RNG_SIZE = 75;
     /**
@@ -24,7 +24,10 @@ public class CircleScreen extends JPanel {
         this.setPreferredSize(new Dimension(SIZE, SIZE));
         this.n = n;
         rng = new Random();
-        points = new int[n];
+        points_radius = new int[n];
+        for (int i = 0; i < n; i++) {
+            points_radius[i] = i;
+        }
     }
 
     @Override
@@ -40,11 +43,12 @@ public class CircleScreen extends JPanel {
         int m = Math.min(a, b);
 
         for (int i = 0; i < n; i++) {
-            r = 4 * m / 5;
+            //r = 4 * m / 5;
+            //int k = rng.nextInt(RNG_SIZE) + 1;
+            //r = r+k;
 
+            r = points_radius[i];
 
-            int k = rng.nextInt(RNG_SIZE) + 1;
-            r = r+k;
             double t = 2 * Math.PI * i / n;
             int x = (int) Math.round(a + r * Math.cos(t));
             int y = (int) Math.round(b + r * Math.sin(t));

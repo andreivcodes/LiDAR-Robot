@@ -37,7 +37,7 @@ public class MainForm extends JFrame {
 
         circlePane.setLayout(new BoxLayout(circlePane, BoxLayout.PAGE_AXIS));
 
-        circleScreen = new CircleScreen(100);
+        circleScreen = new CircleScreen(250);
 
         circlePane.add(circleScreen);
 
@@ -47,10 +47,21 @@ public class MainForm extends JFrame {
             public void run() {
                 updateCircleScreen();
             }
-        }, 250, 250);
+        }, 25, 25);
     }
 
+    int current_point = 0;
+
     private void updateCircleScreen() {
+
+        circleScreen.points_radius[current_point] = client.currentSensorValue / 2;
+
+        if (current_point < circleScreen.n - 1) {
+            current_point++;
+        } else {
+            current_point = 0;
+        }
+
         circleScreen.updateUI();
     }
 
@@ -67,6 +78,7 @@ public class MainForm extends JFrame {
     }
 
     private void onStart() {
+        System.out.println("onStart");
         client = new TCPClient("192.168.4.1", 1212);
         client.startClient();
     }
