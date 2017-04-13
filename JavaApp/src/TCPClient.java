@@ -18,7 +18,7 @@ public class TCPClient extends Thread {
     private String address;
     private boolean running;
     private int bps;
-    public int currentSensorValue;
+    public int currentSensorValue = 100;
 
     public TCPClient(String address, int port) {
         this.port = port;

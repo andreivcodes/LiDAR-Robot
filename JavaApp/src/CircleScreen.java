@@ -26,7 +26,7 @@ public class CircleScreen extends JPanel {
         rng = new Random();
         points_radius = new int[n];
         for (int i = 0; i < n; i++) {
-            points_radius[i] = i;
+            points_radius[i] = 25;
         }
     }
 
