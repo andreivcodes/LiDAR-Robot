@@ -13,8 +13,9 @@ Servo servo;
 
 void setup()
 {
-  
+
   initHardware();
+
   WiFi.softAP("ESPap");
   server.begin();
   Wire.begin();
@@ -23,18 +24,18 @@ void setup()
   sensor.setTimeout(500);
   sensor.setMeasurementTimingBudget(20000);
   sensor.startContinuous();
-  
-  servo.attach(16);
+
+
 }
 
 void loop()
 {
-    if (server.hasClient()) {
-      if (!cl.connected()) {
-        cl = server.available();
-        Serial.println("New client!");
-      }
+  if (server.hasClient()) {
+    if (!cl.connected()) {
+      cl = server.available();
+      Serial.println("New client!");
     }
+  }
 
   switch (cl.read())
   {
@@ -53,12 +54,14 @@ void loop()
   }
 
   cl.println(sensor.readRangeContinuousMillimeters());
-  if (sensor.timeoutOccurred()) { cl.println(" TIMEOUT"); }
+  if (sensor.timeoutOccurred()) {
+    cl.println(" TIMEOUT");
+  }
 
-  
-/*
-   servo.write(45);  
-*/   
+
+
+  servo.write(135);
+
 }
 
 void initHardware()
@@ -66,6 +69,7 @@ void initHardware()
   Serial.begin(115200);
   Serial.println("");
   //pinMode(A0, INPUT);
+  servo.attach(D0);
   pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
+  digitalWrite(LED_BUILTIN, LOW);
 }

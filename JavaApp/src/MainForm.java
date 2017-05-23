@@ -1,7 +1,9 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -22,8 +24,11 @@ public class MainForm extends JFrame {
     private JButton LEDOffButton;
     private JButton resetTickButton;
     private JPanel circlePane;
+    private JButton screenshotButton;
     CircleScreen circleScreen;
     Timer circleScreenTimer;
+
+    private int screenshotCnt = 0;
 
     private MainForm() {
         setContentPane(panel);
@@ -33,6 +38,19 @@ public class MainForm extends JFrame {
         LEDOnButton.addActionListener(e -> client.sendChar('1'));
         LEDOffButton.addActionListener(e -> client.sendChar('0'));
         resetTickButton.addActionListener(e -> client.sendChar('r'));
+
+
+        screenshotButton.addActionListener(e -> {
+            BufferedImage bi = new BufferedImage(circlePane.getSize().width, circlePane.getSize().height, BufferedImage.TYPE_INT_ARGB);
+            Graphics g = bi.createGraphics();
+            circlePane.paint(g);  //this == JComponent
+            g.dispose();
+            try {
+                ImageIO.write(bi, "png", new File("screenshot" + screenshotCnt + ".png"));
+                screenshotCnt++;
+            } catch (Exception excep) {
+            }
+        });
         setVisible(true);
 
         circlePane.setLayout(new BoxLayout(circlePane, BoxLayout.PAGE_AXIS));
@@ -141,6 +159,9 @@ public class MainForm extends JFrame {
         circlePane.setBackground(new Color(-15139072));
         circlePane.setForeground(new Color(-4521952));
         panel.add(circlePane, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        screenshotButton = new JButton();
+        screenshotButton.setText("Screenshot");
+        panel.add(screenshotButton, new com.intellij.uiDesigner.core.GridConstraints(5, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
