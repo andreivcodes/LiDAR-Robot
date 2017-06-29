@@ -1,3 +1,5 @@
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,6 +13,22 @@ import java.util.TimerTask;
  * Created by andrei on 1/4/17.
  */
 public class TCPClient extends Thread {
+
+    public static final int STEP_FORWARD = 3;
+    public static final int STEP_BACKWARD = 4;
+    public static final int STEP_LEFT = 5;
+    public static final int STEP_RIGHT = 6;
+    public static final int ROTATE = 1;
+    public static final int STOP_ROTATE = 2;
+    public static final int RELEASE_MOTORS = 7;
+
+    public static final int WALK_FORWARD_RIGHT = 8;
+    public static final int WALK_BACKWARD_RIGHT = 9;
+    public static final int WALK_FORWARD_LEFT = 10;
+    public static final int WALK_BACKWARD_LEFT = 11;
+    public static final int WALK_FORWARD_BOTH = 12;
+    public static final int WALK_BACKWARD_BOTH = 13;
+
     Socket client;
     String line = "";
     DataOutputStream dOut;
@@ -18,7 +36,6 @@ public class TCPClient extends Thread {
     private String address;
     private boolean running;
     private int bps;
-    public int currentSensorValue = 100;
 
     public TCPClient(String address, int port) {
         this.port = port;
@@ -30,7 +47,7 @@ public class TCPClient extends Thread {
 
         try {
             client = new Socket(address, port);
-            client.setSoTimeout(1000);
+            client.setSoTimeout(10000);
             dOut = new DataOutputStream(client.getOutputStream());
             this.start();
 
@@ -38,7 +55,7 @@ public class TCPClient extends Thread {
             t.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    System.out.println(bps);
+                    //System.out.println(bps + "packs per sec");
                     bps = 0;
                 }
             }, 1000, 1000);
@@ -59,12 +76,8 @@ public class TCPClient extends Thread {
             try {
                 BufferedReader inFromServer = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 while ((line = inFromServer.readLine()) != null) {
-                    MainForm.getInstance().textArea1Text = "Received: " + line + "\n";
-                    currentSensorValue = Integer.valueOf(line);
-                    MainForm.getInstance().updateUI();
+                    PacketReceiveHandler.handle(line);
                     bps++;
-                    //MainForm.getInstance().bpsText = String.valueOf(bps);
-
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -72,20 +85,39 @@ public class TCPClient extends Thread {
         }
     }
 
-    public void sendChar(char c) {
+    public void sendCommand(Object c) {
+        JSONObject obj = new JSONObject();
+        obj.put("c", c);
         try {
-            dOut.write(c);
+            dOut.write(obj.toString().getBytes());
+            dOut.write('#');
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("sent " + c);
+        System.out.println("sent " + obj.toString());
     }
 
-    public void stopClient() {
-        running = false;
+    public void sendTravelDistance(Object c, Object d){
+        JSONObject obj = new JSONObject();
+        obj.put("c", c);
+        obj.put("v",d);
+        try {
+            dOut.write(obj.toString().getBytes());
+            dOut.write('#');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("sent " + obj.toString());
     }
 
 
-
-
+    public void sendString(String s) {
+        try {
+            byte[] data = s.getBytes("UTF-8");
+            dOut.write(data);
+            dOut.write('#');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

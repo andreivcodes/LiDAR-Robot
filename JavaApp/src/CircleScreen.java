@@ -1,58 +1,45 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by andrei on 3/31/17.
  */
 public class CircleScreen extends JPanel {
+    private static final float RPS = .5f;
+    private static final float STEP_VALUE = 1/RPS * 1000.0f/35.0f;
+    private static final int POINT_SIZE = 3;
+    List<Integer> points = new ArrayList<>();
 
-    private static final int SIZE = 256;
-    private static final int POINT_SIZE = 5;
-    private int a;
-    private int b;
-    private int r = 4 * SIZE / 5;
-    public int n;
-    public int[] points_radius;
-    Random rng;
-    private static final int RNG_SIZE = 75;
-    /**
-     * @param n the desired number of circles.
-     */
-    public CircleScreen(int n) {
+    public CircleScreen() {
         super(true);
-        this.setPreferredSize(new Dimension(SIZE, SIZE));
-        this.n = n;
-        rng = new Random();
-        points_radius = new int[n];
-        for (int i = 0; i < n; i++) {
-            points_radius[i] = 25;
-        }
+        this.setPreferredSize(new Dimension(getWidth(), getWidth()));
     }
 
     @Override
     protected void paintComponent(Graphics g) {
+        List<Integer> pointsclone = new ArrayList<>(points);
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setColor(Color.blue);
-        a = getWidth() / 2;
-        b = getHeight() / 2;
-        int m = Math.min(a, b);
+        int a = getWidth() / 2;
+        int b = getHeight() / 2;
 
-        for (int i = 0; i < n; i++) {
-            //r = 4 * m / 5;
-            //int k = rng.nextInt(RNG_SIZE) + 1;
-            //r = r+k;
+            Iterator<Integer> pointsIterator = pointsclone.iterator();
+            int currentPoint = 0;
+            while (pointsIterator.hasNext()) {
+                int p = pointsIterator.next();
+                double t = 2 * Math.PI * currentPoint / STEP_VALUE;
 
-            r = points_radius[i];
-
-            double t = 2 * Math.PI * i / n;
-            int x = (int) Math.round(a + r * Math.cos(t));
-            int y = (int) Math.round(b + r * Math.sin(t));
-            g2d.fillOval(x, y,  POINT_SIZE, POINT_SIZE);
+                int x = (int) Math.round(a + p * Math.cos(t));
+                int y = (int) Math.round(b + p * Math.sin(t));
+                g2d.fillOval(x, y, POINT_SIZE, POINT_SIZE);
+                currentPoint++;
+            }
         }
-    }
 }
