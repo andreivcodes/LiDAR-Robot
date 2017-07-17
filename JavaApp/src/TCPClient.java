@@ -28,6 +28,7 @@ public class TCPClient extends Thread {
     public static final int WALK_BACKWARD_LEFT = 11;
     public static final int WALK_FORWARD_BOTH = 12;
     public static final int WALK_BACKWARD_BOTH = 13;
+    public static final int CALIBRATE = 20;
 
     Socket client;
     String line = "";

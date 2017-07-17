@@ -18,7 +18,7 @@ Adafruit_MotorShield AFMSTop = Adafruit_MotorShield(0x60);
 Adafruit_MotorShield AFMSBot = Adafruit_MotorShield(0x61);
 Adafruit_StepperMotor *rightMotor = AFMSTop.getStepper(48, 2);
 Adafruit_StepperMotor *leftMotor = AFMSTop.getStepper(48, 1);
-Adafruit_StepperMotor *rotateMotor = AFMSBot.getStepper(48, 1);
+Adafruit_StepperMotor *rotateMotor = AFMSBot.getStepper(48, 2);
 
 #define MOVE_TYPE                INTERLEAVE
 
@@ -107,6 +107,8 @@ void task_send_data_callback() {
   roottx.printTo(buffer, sizeof(buffer));
   client.println(buffer);
 
+  left_data = 0;
+  right_data = 0;
   send_data = 0;
 }
 
@@ -133,29 +135,29 @@ void task_motor_control_callback() {
       case 3:
         stepperright.move(10);
         stepperleft.move(10);
-        right_data += 10;
-        left_data += 10;
+        right_data = 10;
+        left_data = 10;
         break;
 
       case 4:
         stepperright.move(-10);
         stepperleft.move(-10);
-        right_data -= 10;
-        left_data -= 10;
+        right_data = -10;
+        left_data = -10;
         break;
 
       case 5:
         stepperright.move(1);
         stepperleft.move(-1);
-        right_data += 1;
-        left_data -= 1;
+        right_data = 1;
+        left_data = -1;
         break;
 
       case 6:
         stepperright.move(-1);
         stepperleft.move(1);
-        right_data -= 1;
-        left_data += 1;
+        right_data = -1;
+        left_data = 1;
         break;
 
       case 7:
@@ -166,36 +168,40 @@ void task_motor_control_callback() {
 
       case 8:
         stepperright.move(value);
-        right_data += value;
+        right_data = value;
         break;
 
       case 9:
         stepperright.move(-value);
-        right_data -= value;
+        right_data = -value;
         break;
 
       case 10:
         stepperleft.move(value);
-        left_data += value;
+        left_data = value;
         break;
 
       case 11:
         stepperleft.move(-value);
-        left_data -= value;
+        left_data = -value;
         break;
 
       case 12:
         stepperright.move(value);
         stepperleft.move(value);
-        right_data += value;
-        left_data += value;
+        right_data = value;
+        left_data = value;
         break;
 
       case 13:
         stepperright.move(-value);
         stepperleft.move(-value);
-        right_data -= value;
-        left_data -= value;
+        right_data = -value;
+        left_data = -value;
+        break;
+
+      case 20: 
+        stepperrotate.move(1);
         break;
 
       default:
@@ -260,7 +266,7 @@ void setup() {
   stepperleft.setMaxSpeed(100.0);
   stepperleft.setAcceleration(50.0);
 
-  stepperrotate.setMaxSpeed(1000.0);
+  stepperrotate.setMaxSpeed(25.0);
 
   WiFi.softAP("ESPap");
   server.begin();

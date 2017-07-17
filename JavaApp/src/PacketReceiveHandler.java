@@ -6,6 +6,8 @@ import org.json.JSONObject;
  */
 public class PacketReceiveHandler {
 
+    static int lastRight;
+    static int lastLeft;
     public static void handle(String line) {
         System.out.println("Received line: " + line);
         JSONObject jsonObject = new JSONObject(line);
@@ -14,14 +16,20 @@ public class PacketReceiveHandler {
         int rightValue =  jsonObject.getInt("r");
         int leftValue = jsonObject.getInt("l");
 
-        //MainForm.getInstance().circleScreen.points.clear();
+
+        int right = rightValue * 22 / 96;
+        int left = leftValue * 22 / 96;
+
+        //if(right != 0 && left != 0)
+        //    MainForm.getInstance().circleScreen.forwarddelta += right;
+
+        System.out.println(right  +  "    " + left);
 
         for (int i = 0; i < sensorJson.length(); ++i) {
             int sensor = sensorJson.getInt(i);
-
             sensor = sensor/5;
-
-            MainForm.getInstance().circleScreen.points.add(sensor);
+            Pt point = new Pt(sensor);
+            MainForm.getInstance().circleScreen.points.add(point);
         }
 
         MainForm.getInstance().circleScreen.updateUI();

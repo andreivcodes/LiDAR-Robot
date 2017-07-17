@@ -34,6 +34,7 @@ public class MainForm extends JFrame implements KeyListener {
     private JButton BBButton;
     private JTextField distanceTextField;
     private JButton clear;
+    public JSlider calibrateSlider;
 
     private int screenshotCnt = 0;
 
@@ -64,8 +65,9 @@ public class MainForm extends JFrame implements KeyListener {
         releaseButton.addActionListener(e -> client.sendCommand(TCPClient.RELEASE_MOTORS));
         rotateButton.addActionListener(e -> {client.sendCommand(TCPClient.ROTATE);
                                                 circleScreen.points.clear();});
-
         clear.addActionListener(e -> circleScreen.points.clear());
+
+        calibrateSlider.addChangeListener(e -> circleScreen.calibrateValue = calibrateSlider.getValue()/10000.00f);
 
         stopRotateButton.addActionListener(e -> client.sendCommand(TCPClient.STOP_ROTATE));
         screenshotButton.addActionListener(e -> {
