@@ -4,7 +4,6 @@
 #include <Adafruit_MotorShield.h>
 #include "utility/Adafruit_MS_PWMServoDriver.h"
 #include <AccelStepper.h>
-#include <Wire.h>
 #include <VL53L0X.h>
 #include <ArduinoJson.h>
 #include <TaskScheduler.h>
@@ -253,10 +252,8 @@ void task_loop_callback() {
   }
 }
 
-void setup() {
-  Serial.begin(115200);
-
-  Serial.println("boot...");
+void motor_init()
+{
   AFMSTop.begin();
   AFMSBot.begin();
 
@@ -267,21 +264,31 @@ void setup() {
   stepperleft.setAcceleration(50.0);
 
   stepperrotate.setMaxSpeed(25.0);
+}
 
+void esp_init()
+{
   WiFi.softAP("ESPap");
   server.begin();
 
   ArduinoOTA.begin();
+}
 
+void comm_init()
+{
   Wire.begin();
+}
 
+void sensor_init()
+{
   sensor.init();
   sensor.setTimeout(20);
 
   sensor.startContinuous();
+}
 
-  pinMode(BUILTIN_LED, OUTPUT);
-
+void tasks_init()
+{
   runner.init();
   runner.addTask(task_led_blink);
   runner.addTask(task_send_data);
@@ -296,6 +303,20 @@ void setup() {
   task_motor_control.enable();
   task_rotate.enable();
   task_loop.enable();
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  Serial.println("boot...");
+
+  esp_init();
+  comm_init();
+  motor_init();
+  sensor_init();
+  tasks_init();
+
+  pinMode(BUILTIN_LED, OUTPUT);
 }
 
 void loop() {
