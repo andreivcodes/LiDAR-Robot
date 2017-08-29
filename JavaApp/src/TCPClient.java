@@ -28,9 +28,8 @@ public class TCPClient extends Thread {
     public static final int WALK_BACKWARD_LEFT = 11;
     public static final int WALK_FORWARD_BOTH = 12;
     public static final int WALK_BACKWARD_BOTH = 13;
-    public static final int CALIBRATE = 20;
 
-    Socket client;
+    Socket server;
     String line = "";
     DataOutputStream dOut;
     private int port;
@@ -47,9 +46,9 @@ public class TCPClient extends Thread {
     public void startClient() {
 
         try {
-            client = new Socket(address, port);
-            client.setSoTimeout(10000);
-            dOut = new DataOutputStream(client.getOutputStream());
+            server = new Socket(address, port);
+            server.setSoTimeout(10000);
+            dOut = new DataOutputStream(server.getOutputStream());
             this.start();
 
             Timer t = new Timer();
@@ -75,7 +74,8 @@ public class TCPClient extends Thread {
         running = true;
         while (running) {
             try {
-                BufferedReader inFromServer = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                BufferedReader inFromServer = new BufferedReader(
+                        new InputStreamReader(server.getInputStream()));
                 while ((line = inFromServer.readLine()) != null) {
                     PacketReceiveHandler.handle(line);
                     bps++;

@@ -45,11 +45,12 @@ public class CircleScreen extends JPanel {
                         p.x = (int) Math.round(a + p.distance * Math.cos(t));
                         p.y = (int) Math.round(b + p.distance * Math.sin(t)) - forwarddelta;
                     }
-                    Color tmpcolor = new Color(p.color.getRed(), p.color.getGreen(), p.color.getBlue(), p.alpha < 0? 0:p.alpha);
+                    Color tmpcolor = new Color(p.color.getRed(), p.color.getGreen(),
+                            p.color.getBlue(), p.alpha < 0? 0:p.alpha);
                     p.alpha -= 50;
                     g2d.setColor(tmpcolor);
                     g2d.fillOval(p.x, p.y, POINT_SIZE, POINT_SIZE);
                     currentPoint++;
             }
         }
-}
+    }

@@ -33,7 +33,7 @@ public class MainForm extends JFrame implements KeyListener {
     private JButton RBButton;
     private JButton BBButton;
     private JTextField distanceTextField;
-    private JButton clear;
+    private JButton clearButton;
     public JSlider calibrateSlider;
 
     private int screenshotCnt = 0;
@@ -43,6 +43,14 @@ public class MainForm extends JFrame implements KeyListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200, 800);
         setVisible(true);
+
+        circlePane.setLayout(new BoxLayout(circlePane, BoxLayout.PAGE_AXIS));
+        circleScreen = new CircleScreen();
+        circlePane.add(circleScreen);
+
+        client = new TCPClient("192.168.4.1", 1212);
+        client.startClient();
+
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 client.sendCommand(TCPClient.RELEASE_MOTORS);
@@ -52,26 +60,35 @@ public class MainForm extends JFrame implements KeyListener {
 
         sendTextField.addKeyListener(this);
 
+        RFButton.addActionListener(
+                e -> client.sendTravelDistance(TCPClient.WALK_FORWARD_RIGHT, distanceTextField.getText()));
+        LFButton.addActionListener(
+                e -> client.sendTravelDistance(TCPClient.WALK_FORWARD_LEFT, distanceTextField.getText()));
+        BFButton.addActionListener(
+                e -> client.sendTravelDistance(TCPClient.WALK_FORWARD_BOTH, distanceTextField.getText()));
 
-        RFButton.addActionListener(e -> client.sendTravelDistance(TCPClient.WALK_FORWARD_RIGHT, distanceTextField.getText()));
-        LFButton.addActionListener(e -> client.sendTravelDistance(TCPClient.WALK_FORWARD_LEFT, distanceTextField.getText()));
-        BFButton.addActionListener(e -> client.sendTravelDistance(TCPClient.WALK_FORWARD_BOTH, distanceTextField.getText()));
-
-        RBButton.addActionListener(e -> client.sendTravelDistance(TCPClient.WALK_BACKWARD_RIGHT, distanceTextField.getText()));
-        LBButton.addActionListener(e -> client.sendTravelDistance(TCPClient.WALK_BACKWARD_LEFT, distanceTextField.getText()));
-        BBButton.addActionListener(e -> client.sendTravelDistance(TCPClient.WALK_BACKWARD_BOTH, distanceTextField.getText()));
+        RBButton.addActionListener(
+                e -> client.sendTravelDistance(TCPClient.WALK_BACKWARD_RIGHT, distanceTextField.getText()));
+        LBButton.addActionListener(
+                e -> client.sendTravelDistance(TCPClient.WALK_BACKWARD_LEFT, distanceTextField.getText()));
+        BBButton.addActionListener(
+                e -> client.sendTravelDistance(TCPClient.WALK_BACKWARD_BOTH, distanceTextField.getText()));
 
         sendCharButton.addActionListener(e -> client.sendString(sendTextField.getText()));
         releaseButton.addActionListener(e -> client.sendCommand(TCPClient.RELEASE_MOTORS));
         rotateButton.addActionListener(e -> {client.sendCommand(TCPClient.ROTATE);
                                                 circleScreen.points.clear();});
-        clear.addActionListener(e -> circleScreen.points.clear());
+        clearButton.addActionListener(e -> circleScreen.points.clear());
 
-        calibrateSlider.addChangeListener(e -> circleScreen.calibrateValue = calibrateSlider.getValue()/10000.00f);
+        calibrateSlider.addChangeListener(
+                e -> circleScreen.calibrateValue = calibrateSlider.getValue()/10000.00f);
 
-        stopRotateButton.addActionListener(e -> client.sendCommand(TCPClient.STOP_ROTATE));
-        screenshotButton.addActionListener(e -> {
-            BufferedImage bi = new BufferedImage(circlePane.getSize().width, circlePane.getSize().height, BufferedImage.TYPE_INT_ARGB);
+        stopRotateButton.addActionListener(
+                e -> client.sendCommand(TCPClient.STOP_ROTATE));
+        screenshotButton.addActionListener(
+                e -> {
+            BufferedImage bi = new BufferedImage(circlePane.getSize().width,
+                    circlePane.getSize().height, BufferedImage.TYPE_INT_ARGB);
             Graphics g = bi.createGraphics();
             circlePane.paint(g);  //this == JComponent
             g.dispose();
@@ -81,13 +98,6 @@ public class MainForm extends JFrame implements KeyListener {
             } catch (Exception excep) {
             }
         });
-
-        circlePane.setLayout(new BoxLayout(circlePane, BoxLayout.PAGE_AXIS));
-        circleScreen = new CircleScreen();
-        circlePane.add(circleScreen);
-
-        client = new TCPClient("192.168.4.1", 1212);
-        client.startClient();
 
         System.out.println("onStart");
     }
@@ -113,7 +123,8 @@ public class MainForm extends JFrame implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN)
+        if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT ||
+                e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN)
             client.sendCommand(TCPClient.RELEASE_MOTORS);
     }
 

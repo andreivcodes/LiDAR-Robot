@@ -20,9 +20,6 @@ public class PacketReceiveHandler {
         int right = rightValue * 22 / 96;
         int left = leftValue * 22 / 96;
 
-        //if(right != 0 && left != 0)
-        //    MainForm.getInstance().circleScreen.forwarddelta += right;
-
         System.out.println(right  +  "    " + left);
 
         for (int i = 0; i < sensorJson.length(); ++i) {
