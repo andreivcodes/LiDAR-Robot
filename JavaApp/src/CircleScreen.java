@@ -10,7 +10,7 @@ import java.util.List;
 public class CircleScreen extends JPanel {
     private static final float RPS = .5f;
     private static final float STEP_VALUE = 1/RPS * 1000.0f/35.0f;
-    private static final int POINT_SIZE = 3;
+    private static final int POINT_SIZE = 5;
 
     List<Pt> points = new ArrayList<>();
 
